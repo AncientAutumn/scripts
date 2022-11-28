@@ -1,0 +1,17 @@
+#!/bin/bash
+#Using whois to find the ISP of the IP address from a list of IP addre.
+#To use, run findISP <path/to/ip_list.txt>
+
+echo "Make sure to have whois dependency installed on your linux/mac environment. Not supported on Windows"
+echo "To use it, run findISP <path/to/ip_list.txt>"
+echo ""
+
+input=$1
+number=1
+while IFS= read -r line
+do
+	echo -n -e "$number" '\t' | sed "s/^/    /g"
+	echo -n -e $line '\t' |sed "s/^/    /g"
+	whois $line | grep "descr" | tail -1 | awk '{$1=""}1' | sed "s/^/    /g"
+	let "number++"
+done < $input
