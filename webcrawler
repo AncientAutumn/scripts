@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python /usr/bin/SaveWayBack/dsuc.py -u $1 | awk '!seen[$0]++'

@@ -1,0 +1,28 @@
+#!/bin/bash
+#requirements 
+#Damn-Small-URL-Crawler : https://github.com/r3dxpl0it/Damn-Small-URL-Crawler
+#pip install waybackpy
+
+
+start_time="$(date -u +%s)"
+
+url_array=($(python /usr/bin/SaveWayBack/dsuc.py -u $1 | awk '!seen[$0]++'))
+count=0
+length=${#url_array[@]}
+time=$(expr $length / 3)
+echo "Total number of URL is ${#url_array[@]}, it is going to take more than $time minutes"
+while [ $count -lt $length ]
+do
+	#waybackpy --url ${url_array[$count]} --save
+	((count++))
+	
+	if [ $(expr $count % 3) == "0" ];
+		then
+			echo "-------------------------Waiting for 1 minutes for next batch [$count / $length]-------------------------"
+			sleep 1m
+	fi
+done
+
+end_time="$(date -u +%s)"
+elapsed="$(($end_time-$start_time))"
+echo "Job taken $elapsed seconds"
