@@ -1,16 +1,23 @@
 #!/bin/bash
 #requirements 
-#Damn-Small-URL-Crawler : https://github.com/r3dxpl0it/Damn-Small-URL-Crawler
+#install hakrawler, go and waybackpy
+#go install github.com/hakluke/hakrawler@latest
 #pip install waybackpy
 
 
 start_time="$(date -u +%s)"
 
-url_array=($(krawl $1))
+#url_array=($(krawl $1))
+url_array=($(echo $1 | hakrawler | awk '!seen[$0]++' | grep -E $1))
 count=0
 length=${#url_array[@]}
 time=$(expr $length \* 38)
-echo "Total number of URL is ${#url_array[@]}, it is going to take more than $time seconds"
+
+x=$time
+((sec=x%60, x/=60, min=x%60, hrs=x/60))
+est_timestamp=$(printf "%d:%02d:%02d" $hrs $min $sec)
+
+echo "Total number of URL is ${#url_array[@]}, it is going to take more than $est_timestamp"
 while [ $count -lt $length ]
 do
 	waybackpy --url ${url_array[$count]} --save
@@ -27,6 +34,11 @@ do
 	fi
 done
 
-end_time="$(date -u +%s)"
-elapsed="$(($end_time-$start_time))"
-echo "Job taken $elapsed seconds"
+#end_time="$(date -u +%s)"
+#elapsed="$(($end_time-$start_time))"
+#echo "Job taken $elapsed seconds"
+
+i=$elapsed
+((sec=i%60, i/=60, min=i%60, hrs=i/60))
+timestamp=$(printf "%d:%02d:%02d" $hrs $min $sec)
+echo "Job taken $timestamp to complete"
