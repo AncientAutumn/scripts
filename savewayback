@@ -6,19 +6,23 @@
 
 start_time="$(date -u +%s)"
 
-url_array=($(python /usr/bin/SaveWayBack/dsuc.py -u $1 | awk '!seen[$0]++'))
+url_array=($(krawl $1))
 count=0
 length=${#url_array[@]}
-time=$(expr $length / 3)
-echo "Total number of URL is ${#url_array[@]}, it is going to take more than $time minutes"
+time=$(expr $length \* 38)
+echo "Total number of URL is ${#url_array[@]}, it is going to take more than $time seconds"
 while [ $count -lt $length ]
 do
-	#waybackpy --url ${url_array[$count]} --save
+	waybackpy --url ${url_array[$count]} --save
 	((count++))
 	
-	if [ $(expr $count % 3) == "0" ];
+	if [ $(expr $count % 12) == "0" ]
 		then
-			echo "-------------------------Waiting for 1 minutes for next batch [$count / $length]-------------------------"
+			echo "-------------------------Waiting for 2 minutes for next batch [ $count / $length ]-------------------------"
+			sleep 2m
+	elif [ $(expr $count % 3) == "0" ]
+		then 
+			echo "-------------------------Waiting for 1 minutes for next batch [ $count / $length ]-------------------------"
 			sleep 1m
 	fi
 done
